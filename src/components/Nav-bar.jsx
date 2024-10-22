@@ -1,3 +1,5 @@
+import vector from "../assets/nav-bar/Vector.svg"
+
 export function NavBar() {
     return (
       <nav className="flex items-center justify-between py-3 px-6 bg-[#F9F8F6] border-b border-[#DAD6D1] lg:px-[120px]">
@@ -20,8 +22,8 @@ export function NavBar() {
         </div>
         <button className="md:hidden">
           <img
-            src="C:\Users\user\React-project\reangsak-personal-blog\src\assets\nav-bar\Vector.svg"
-            alt="nav-menu"
+            src = {vector}
+            alt = "nav-menu"
           />
         </button>
       </nav>
