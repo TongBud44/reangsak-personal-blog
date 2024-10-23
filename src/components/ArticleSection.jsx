@@ -9,9 +9,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BlogCard } from "./BlogCard";
+import { useState } from "react"; {/* ทำให้หน้าเว็บไซต์ Interact กับ User */}
 
 export default function ArticleSection() {
   const categories = ["Highlight", "Cat", "Inspiration", "General"];
+  const [category, setCategory] = useState("Highlight");
   return (
     <>
       <div className="bg-[#F9F8F6] w-full mx-auto md:px-6 lg:px-[120px] mb-10">
@@ -28,10 +30,14 @@ export default function ArticleSection() {
             </div>
           </div>
           <div className="md:hidden w-full">
-            <Select value="Highlight">
+            <Select
+              value={category}
+              onValueChange={(value) => setCategory(value)}
+            >
               <SelectTrigger className="w-full py-3 rounded-sm text-muted-foreground">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
+              {/* แสดงหมวดหมู่ในขนาด mobile */}
               <SelectContent>
                 {categories.map((cat) => {
                   return (
@@ -43,21 +49,19 @@ export default function ArticleSection() {
               </SelectContent>
             </Select>
           </div>
-          <div className="hidden md:flex space-x-2">
-            <button className="px-4 py-3 transition-colors rounded-sm text-sm text-muted-foreground font-medium bg-[#DAD6D1] lg:text-[#43403B]">
-              Highlight
+          {/* แสดงหมวดหมู่ในขนาด Desktop */}
+          <div className="hidden md:flex space-x-2"> 
+            {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setCategory(cat)}
+              className={`px-4 py-3 transition-colors rounded-sm text-sm text-muted-foreground font-medium ${
+                category === cat ? "bg-[#DAD6D1]" : "hover:bg-[#F9F8F6]"
+              }`}
+            >
+              {cat}
             </button>
-            {categories.slice(1).map((cat) => {
-              return (
-                <button
-                  key={cat}
-                  className="px-4 py-3 transition-colors rounded-sm text-sm text-muted-foreground font-medium hover:bg-muted
-              "
-                >
-                  {cat}
-                </button>
-              );
-            })}
+          ))}
           </div>
         </div>
       </div>
