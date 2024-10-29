@@ -1,6 +1,5 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { blogPosts } from "@/data/blogPosts";
 import {
   Select,
   SelectContent,
@@ -9,11 +8,52 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { BlogCard } from "./BlogCard";
-import { useState } from "react"; {/* ทำให้หน้าเว็บไซต์ Interact กับ User */}
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function ArticleSection() {
   const categories = ["Highlight", "Cat", "Inspiration", "General"];
   const [category, setCategory] = useState("Highlight");
+  const [post, setPost] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [filteredPosts, setFilteredPosts] = useState([]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const getPosts = async () => {
+      try {
+        const response = await axios.get(
+          `https://blog-post-project-api.vercel.app/posts?page=${page}&limit=6`
+        );
+        setPost((prevPosts) => [...prevPosts, ...response.data.posts]);
+        console.log(response);
+        setIsLoading(false);
+        if (response.data.currentPage >= response.data.totalPages) {
+          setHasMore(false);
+        }
+      } catch (error) {
+        console.log(error);
+        setIsLoading(false);
+      }
+    };
+
+    getPosts();
+  }, [page, category]);
+
+  const handleLoadMore = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
+
+  useEffect(() => {
+    if (category === "Highlight") {
+      setFilteredPosts(post); // แสดงโพสต์ทั้งหมดเมื่อเลือก Highlight
+    } else {
+      setFilteredPosts(post.filter((blog) => blog.category === category));
+    }
+  }, [post, category]);
+
   return (
     <>
       <div className="bg-[#F9F8F6] w-full mx-auto md:px-6 lg:px-[120px] mb-10">
@@ -32,7 +72,12 @@ export default function ArticleSection() {
           <div className="md:hidden w-full">
             <Select
               value={category}
-              onValueChange={(value) => setCategory(value)}
+              onValueChange={(value) => {
+                setCategory(value);
+                setPost([]);
+                setPage(1);
+                setHasMore(true);
+              }}
             >
               <SelectTrigger className="w-full py-3 rounded-sm text-muted-foreground">
                 <SelectValue placeholder="Select category" />
@@ -50,36 +95,55 @@ export default function ArticleSection() {
             </Select>
           </div>
           {/* แสดงหมวดหมู่ในขนาด Desktop */}
-          <div className="hidden md:flex space-x-2"> 
+          <div className="hidden md:flex space-x-2">
             {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategory(cat)}
-              className={`px-4 py-3 transition-colors rounded-sm text-sm text-muted-foreground font-medium ${
-                category === cat ? "bg-[#DAD6D1]" : "hover:bg-[#F9F8F6]"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+              <button
+                key={cat}
+                onClick={() => {
+                  setCategory(cat);
+                  setPost([]);
+                  setPage(1);
+                  setHasMore(true);
+                }}
+                className={`px-4 py-3 transition-colors rounded-sm text-sm text-muted-foreground font-medium ${
+                  category === cat ? "bg-[#DAD6D1]" : "hover:bg-[#F9F8F6]"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
         </div>
       </div>
-      <article className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 md:px-0">
-        {blogPosts.map((blog, id) => {
+      <article className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 lg:px-[120px] pb-20 lg:pb-[120px]">
+        {filteredPosts.map((blog, index) => {
           return (
             <BlogCard
-              key={id}
+              key={index}
               image={blog.image}
               category={blog.category}
               title={blog.title}
               description={blog.description}
               author={blog.author}
-              date={blog.date}
+              date={new Date(blog.date).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             />
           );
         })}
       </article>
+      {hasMore && (
+        <div className="text-center mt-8">
+          <button
+            onClick={handleLoadMore}
+            className="hover:text-muted-foreground font-medium underline"
+          >
+            {isLoading ? "Loading..." : "View more"}
+          </button>
+        </div>
+      )}
     </>
   );
 }

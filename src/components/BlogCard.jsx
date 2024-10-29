@@ -3,7 +3,7 @@ export function BlogCard(props) {
     <div className="flex flex-col gap-4">
       <a href="#" className="relative h-[212px] sm:h-[360px]">
         <img
-          className="w-full h-full object-cover rounded-md"
+          className="w-full h-full object-cover rounded-2xl"
           src={props.image}
           alt={props.title}
         />
