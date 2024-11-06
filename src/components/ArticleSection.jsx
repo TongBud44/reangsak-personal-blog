@@ -48,7 +48,7 @@ export default function ArticleSection() {
 
   useEffect(() => {
     if (category === "Highlight") {
-      setFilteredPosts(post); // แสดงโพสต์ทั้งหมดเมื่อเลือก Highlight
+      setFilteredPosts(post);
     } else {
       setFilteredPosts(post.filter((blog) => blog.category === category));
     }
@@ -120,6 +120,7 @@ export default function ArticleSection() {
           return (
             <BlogCard
               key={index}
+              id={blog.id}
               image={blog.image}
               category={blog.category}
               title={blog.title}
