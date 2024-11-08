@@ -17,7 +17,7 @@ export function BlogCard(props) {
             {props.category}
           </span>
         </div>
-        <a href="#">
+        <a href={`/post/${props.id}`}>
           <h2 className="text-start font-bold text-xl mb-2 line-clamp-2 hover:underline">
             {props.title}
           </h2>
